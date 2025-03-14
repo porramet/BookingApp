@@ -94,115 +94,79 @@ class BookingController extends Controller
     }
 
     public function store(Request $request)
-    {
-        try {
-            \Log::debug('Incoming booking request:', $request->all());
-            
-            // Validate request data
-            $validated = $request->validate([
-                'room_id' => 'required|exists:rooms,room_id',
-                'building_id' => 'required|exists:buildings,id',
-                'room_name' => 'required|string|max:255',
-                'building_name' => 'required|string|max:255',
-                'external_name' => 'required|string|max:255',
-                'external_email' => 'required|email|max:255',
-                'external_phone' => 'required|string|max:20',
-                'booking_start' => 'required|date|after:today',
-                'booking_end' => 'required|date|after:booking_start',
-                'reason' => 'nullable|string',
-                'payment_slip' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            ]);
+{
+    try {
+        \Log::debug('Incoming booking request:', $request->all());
+        
+        // Validate request data
+        $validated = $request->validate([
+            'room_id' => 'required|exists:rooms,room_id',
+            'building_id' => 'required|exists:buildings,id',
+            'room_name' => 'required|string|max:255',
+            'building_name' => 'required|string|max:255',
+            'external_name' => 'required|string|max:255',
+            'external_email' => 'required|email|max:255',
+            'external_phone' => 'required|string|max:20',
+            'booking_start' => 'required|date|after:today',
+            'booking_end' => 'required|date|after:booking_start',
+            'reason' => 'nullable|string',
+            'payment_slip' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
 
-            // ตรวจสอบว่าวันที่จองอยู่ในวันหยุดหรือไม่
-            $startDate = new \DateTime($validated['booking_start']);
-            $endDate = new \DateTime($validated['booking_end']);
-            $holidays = array_keys($this->holidays);
-            
-            // ตรวจสอบช่วงวันที่จองว่ามีวันหยุดหรือไม่
-            $holidayInRange = false;
-            $holidayName = '';
-            
-            $period = new \DatePeriod(
-                $startDate,
-                new \DateInterval('P1D'),
-                $endDate
-            );
-            
-            foreach ($period as $date) {
-                $formattedDate = $date->format('Y-m-d');
-                if (in_array($formattedDate, $holidays)) {
-                    $holidayInRange = true;
-                    $holidayName = $this->holidays[$formattedDate];
-                    break;
-                }
-            }
-            
-            if ($holidayInRange) {
-                return back()->with('error', "ไม่สามารถจองห้องในวันหยุดนักขัตฤกษ์ได้ ({$holidayName})")
-                             ->withInput();
-            }
+        // ส่วนตรวจสอบวันหยุดและการซ้อนทับ...
 
-            // ตรวจสอบการซ้อนทับกับการจองอื่น
-            $conflictingBooking = Booking::where('room_id', $validated['room_id'])
-                ->whereIn('status_id', [1, 2, 3])
-                ->where(function($query) use ($validated) {
-                    $query->where(function($q) use ($validated) {
-                        // กรณีวันเริ่มต้นหรือวันสิ้นสุดของการจองใหม่อยู่ในช่วงการจองที่มีอยู่
-                        $q->whereBetween('booking_start', [$validated['booking_start'], $validated['booking_end']])
-                          ->orWhereBetween('booking_end', [$validated['booking_start'], $validated['booking_end']]);
-                    })
-                    ->orWhere(function($q) use ($validated) {
-                        // กรณีการจองที่มีอยู่ครอบคลุมการจองใหม่ทั้งหมด
-                        $q->where('booking_start', '<=', $validated['booking_start'])
-                          ->where('booking_end', '>=', $validated['booking_end']);
-                    });
-                })
-                ->exists();
+        // คำนวณราคารวม
+        $room = Room::find($validated['room_id']);
+        $start = new \DateTime($validated['booking_start']);
+        $end = new \DateTime($validated['booking_end']);
+        $days = $end->diff($start)->days;
+        // ถ้าจองวันเดียว ต้องคิดเป็น 1 วัน
+        $days = $days > 0 ? $days : 1;
+        $totalPrice = $room->service_rates * $days;
 
-            if ($conflictingBooking) {
-                return back()->with('error', 'ห้องไม่ว่างในช่วงเวลาที่เลือก กรุณาเลือกเวลาอื่น')
-                             ->withInput();
-            }
-
-            // คำนวณราคารวม
-            $room = Room::find($validated['room_id']);
-            $start = new \DateTime($validated['booking_start']);
-            $end = new \DateTime($validated['booking_end']);
-            $days = $end->diff($start)->days;
-            $totalPrice = $room->service_rates * $days;
-
-            // สร้างข้อมูลการจอง
-            $booking = new Booking();
-            $booking->fill($validated);
-            $booking->status_id = 3; // สถานะรอการยืนยัน
-            $booking->is_external = true;
-            $booking->total_price = $totalPrice;
-            $booking->payment_status = 'pending';
-            
-            // กรณีผู้ใช้ที่ login แล้ว
-            if (auth()->check()) {
-                $booking->user_id = auth()->id();
-            }
-            
-            // จัดการกับไฟล์อัปโหลด
-            if ($request->hasFile('payment_slip')) {
-                $file = $request->file('payment_slip');
-                $filePath = $file->store('payment_slips', 'public'); // Store file in public/payment_slips
-                $booking->payment_slip = $filePath;
-            }
-            
-            $booking->save();
-
-            // ส่งอีเมลแจ้งยืนยันการจอง (ควรทำในส่วนนี้)
-            // Mail::to($booking->external_email)->send(new BookingConfirmation($booking));
-
-            return redirect()->route('booking.index')->with('success', 'การจองห้องสำเร็จ! กรุณาตรวจสอบอีเมลของคุณเพื่อยืนยันการจอง');
-        } catch (\Exception $e) {
-            \Log::error('Booking failed: ' . $e->getMessage(), ['request' => $request->all()]);
-            return back()->with('error', 'เกิดข้อผิดพลาดในการจอง: ' . $e->getMessage())
-                         ->withInput();
+        // สร้างข้อมูลการจอง
+        $booking = new Booking();
+        $booking->fill($validated);
+        $booking->status_id = 3; // สถานะรอการยืนยัน
+        $booking->is_external = true;
+        $booking->total_price = $totalPrice;
+        $booking->payment_status = 'pending';
+        
+        // กรณีผู้ใช้ที่ login แล้ว
+        if (auth()->check()) {
+            $booking->user_id = auth()->id();
         }
+        
+        // จัดการกับไฟล์อัปโหลด - แก้ไขเพื่อตรวจสอบและ debug
+        if ($request->hasFile('payment_slip')) {
+            try {
+                $file = $request->file('payment_slip');
+                if ($file->isValid()) {
+                    $filePath = $file->store('payment_slips', 'public');
+                    $booking->payment_slip = $filePath;
+                    \Log::info('Payment slip saved successfully: ' . $filePath);
+                } else {
+                    \Log::warning('Invalid payment slip file.');
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error uploading payment slip: ' . $e->getMessage());
+            }
+        } else {
+            \Log::info('No payment slip provided in the request.');
+        }
+        
+        $booking->save();
+
+        // ส่งอีเมลแจ้งยืนยันการจอง...
+
+        return redirect()->route('booking.index')->with('success', 'การจองห้องสำเร็จ! กรุณาตรวจสอบอีเมลของคุณเพื่อยืนยันการจอง');
+
+    } catch (\Exception $e) {
+        \Log::error('Booking failed: ' . $e->getMessage(), ['request' => $request->all()]);
+        return back()->with('error', 'เกิดข้อผิดพลาดในการจอง: ' . $e->getMessage())
+                     ->withInput();
     }
+}
 
     public function show($id)
     {

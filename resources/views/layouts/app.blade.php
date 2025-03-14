@@ -9,15 +9,44 @@
     <!-- ลิงก์ CSS สำหรับ Bootstrap และ Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    
-    <!-- ลิงก์ JS สำหรับ FullCalendar และ jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- FullCalendar และ Bootstrap -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+
+    <style>
+        /* Loader Overlay */
+        #loading-overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+        .spinner-border {
+            width: 4rem;
+            height: 4rem;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Loader -->
+    <div id="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <button class="mobile-menu-toggle">
             <i class="fas fa-bars"></i>
@@ -80,20 +109,38 @@
                 </nav>
             </div>
             <div class="col-md-10 content">
+                @include('header')
                 @yield('content')
                 @yield('scripts')
             </div>
         </div>
     </div>
+
     @include('footer')
+
+    <script>
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+    document.body.classList.toggle('sidebar-collapse');
+    });
+        $(document).ready(function() {
+            // เมื่อคลิกที่ลิงก์ใดๆ ให้แสดง Loader
+            $("a").on("click", function(event) {
+                let target = $(this).attr("target");
+                if (!target || target === "_self") {
+                    $("#loading-overlay").css({"visibility": "visible", "opacity": "1"});
+                }
+            });
+
+            // เมื่อหน้าโหลดเสร็จ ให้ซ่อน Loader
+            $(window).on("load", function() {
+                $("#loading-overlay").css({"visibility": "hidden", "opacity": "0"});
+            });
+        });
+    </script>
+
 </body>
 </html>
 
-<script>
-    document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
-    document.body.classList.toggle('sidebar-collapse');
-});
-</script>
 <style>
     /* Main Layout Styles */
 body {
