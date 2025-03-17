@@ -63,6 +63,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ url('calendar') }}" class="nav-link text-gray-700">
+                                <i class="fas fa-calendar-alt me-2"></i> ปฏิทินการจอง
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ url('/booking') }}" class="nav-link text-gray-700">
                                 <i class="fas fa-door-open me-2"></i> จองห้อง
                             </a>
@@ -109,7 +114,7 @@
                 </nav>
             </div>
             <div class="col-md-10 content">
-                @include('header')
+                
                 @yield('content')
                 @yield('scripts')
             </div>

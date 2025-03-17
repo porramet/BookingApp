@@ -10,6 +10,13 @@ use App\Models\Building;
 class BookingController extends Controller
 {
     // ข้อมูลวันหยุดประจำปี 2025
+    public function booking()
+    {
+        $buildings = Building::with('rooms')->get();
+        $rooms = Room::with('status')->get();
+        return view('booking', compact('buildings', 'rooms'));
+    }
+
     private $holidays = [
         '2025-01-01' => 'วันขึ้นปีใหม่',
         '2025-02-10' => 'วันมาฆบูชา',
@@ -36,7 +43,9 @@ class BookingController extends Controller
     {
         $buildings = Building::with('rooms')->get();
         $rooms = Room::with('status')->get();
-        return view('index', compact('buildings', 'rooms'));
+        return view('booking', compact('buildings', 'rooms'));
+
+
     }
 
     public function showBookingForm($id)

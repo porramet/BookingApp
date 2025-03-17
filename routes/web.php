@@ -28,6 +28,7 @@ use App\Http\Controllers\{
 Route::get('/', function () {
     return view('index');
 });
+
 // Booking routes with consistent naming
 Route::prefix('booking')->group(function () {
     Route::get('/', [BookingController::class, 'index'])->name('booking.index');
@@ -45,8 +46,9 @@ Route::prefix('rooms')->group(function () {
     Route::get('/popular', [RoomController::class, 'popular'])->name('rooms.popular');
 });
 // Home and booking routes
-Route::get('/', [BookingController::class, 'index']);
-Route::get('/booking', [BookingController::class, 'index']);
+//Route::get('/', [BookingController::class, 'index']);
+Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
+
 //Route::get('/booking/{id}', [BookingController::class, 'showBookingForm']);
 //Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 //Route::get('booking/{id}', 'BookingController@showBookingForm');
@@ -61,6 +63,10 @@ Route::get('/booking', [BookingController::class, 'index']);
 //Route::get('/rooms/building/{building_id}', [RoomController::class, 'byBuilding'])->name('rooms.byBuilding');
 //Route::get('/rooms/popular', [RoomController::class, 'popular'])->name('rooms.popular');
 
+//ปฏิทิน 
+Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+Route::get('/calendar/data', [CalendarController::class, 'getCalendarData'])->name('calendar.data');
+Route::get('/calendar/table', [CalendarController::class, 'getTableView'])->name('calendar.table');
 // Building routes
 Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
 Route::middleware(['auth'])->group(function () {
@@ -82,8 +88,11 @@ Route::get('/how-to-use', function () { return view('how_to_use'); });
 Route::get('/usage', function () { return view('usage'); });
 Route::get('/contact', function () { return view('contact'); });
 
+Route::get('/contact', function () { return view('contact'); })->name('contact'); // Added contact route
+
 // Authentication routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -123,7 +132,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
     Route::delete('/manage-users/{id}', [ManageUsersController::class, 'destroy'])->name('manage_users.destroy');
     Route::get('/booking_db', [Booking_dbController::class, 'index'])->name('booking_db'); 
     Route::get('/booking-history', [BookingHistoryController::class, 'index'])->name('booking_history');
-    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+
     
     // Building management
     Route::get('/manage-buildings', [ManageBuildingsController::class, 'index'])->name('manage.buildings');

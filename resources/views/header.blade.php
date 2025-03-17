@@ -5,7 +5,7 @@
                 <!-- Logo and Title -->
                 <div class="d-flex align-items-center gap-3">
                     <img src="/path/to/logo.png" alt="Logo" class="logo" width="50" height="50">
-                    <h2 class="fw-bold text-white mb-0">ระบบจองห้องมหาวิทยาลัยราชภัฏสกลนคร</h2>
+                    <h2 class="fw-bold text-black mb-0">ระบบจองห้องมหาวิทยาลัยราชภัฏสกลนคร</h2>
                 </div>
 
                 <!-- Search and User Actions -->
