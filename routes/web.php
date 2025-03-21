@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/booking/approve/{id}', [Booking_dbController::class, 'approve'])->name('booking.approve');
 Route::get('/booking/reject/{id}', [Booking_dbController::class, 'reject'])->name('booking.reject');
 
+// Route for calendar view
+Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+
+
 use App\Http\Controllers\{
     Booking_dbController,
     Auth\RegisterController,
@@ -18,7 +22,11 @@ use App\Http\Controllers\{
     CalendarController,
     BookingHistoryController,
     RoomController,
-    BookingController
+    BookingController,
+    UsageController,
+    ContactController,
+    BookingCalendarController
+    
     
 };
 
@@ -45,8 +53,8 @@ Route::prefix('rooms')->group(function () {
     Route::get('/building/{building_id}', [RoomController::class, 'byBuilding'])->name('rooms.byBuilding');
     Route::get('/popular', [RoomController::class, 'popular'])->name('rooms.popular');
 });
-// Home and booking routes
-//Route::get('/', [BookingController::class, 'index']);
+Route::get('/', [DashboardController::class, 'showIndex'])->name('index');
+
 Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
 
 //Route::get('/booking/{id}', [BookingController::class, 'showBookingForm']);
@@ -67,6 +75,15 @@ Route::get('/booking', [BookingController::class, 'index'])->name('booking.index
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 Route::get('/calendar/data', [CalendarController::class, 'getCalendarData'])->name('calendar.data');
 Route::get('/calendar/table', [CalendarController::class, 'getTableView'])->name('calendar.table');
+
+Route::middleware(['auth'])->group(function () {
+    //Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    // Calendar routes
+    //Route::get('/calendar', [BookingCalendarController::class, 'index'])->name('calendar.index');
+    // Booking details for modal
+    //Route::get('/bookings/{id}/details', [BookingCalendarController::class, 'getBookingDetails'])->name('bookings.details');
+});
+
 // Building routes
 Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
 Route::middleware(['auth'])->group(function () {
@@ -83,12 +100,15 @@ Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.
 Route::get('/buildings/{id}', [BuildingController::class, 'show'])->name('buildings.show'); // Route for showing a specific building
 Route::get('/buildings/{id}/rooms', [BuildingController::class, 'fetchRooms'])->name('buildings.fetchRooms'); // Route to fetch rooms for a specific building
 
-
+// ในไฟล์ web.php
+Route::get('/usage', [UsageController::class, 'index'])->name('usage.index');
 Route::get('/how-to-use', function () { return view('how_to_use'); });
-Route::get('/usage', function () { return view('usage'); });
-Route::get('/contact', function () { return view('contact'); });
+//Route::get('/usage', function () { return view('usage'); });
+//Route::get('/contact', function () { return view('contact'); });
+// ในไฟล์ web.php
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 
-Route::get('/contact', function () { return view('contact'); })->name('contact'); // Added contact route
+//Route::get('/contact', function () { return view('contact'); })->name('contact'); // Added contact route
 
 // Authentication routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -103,16 +123,19 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 // Admin routes
 Route::middleware(['auth', 'can:admin-only'])->group(function () {
     // Dashboard
-    Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
+    Route::get('/dashboard', function () {
+        return view('dashboard.dashboard'); // Redirecting to the existing dashboard view
+    })->name('admin.dashboard');
     Route::get('/available-rooms', [BookingController::class, 'getAvailableRooms'])->name('available.rooms');
-Route::post('/create-booking', [BookingController::class, 'store'])->name('create.booking');
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/create-booking', [BookingController::class, 'store'])->name('create.booking');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Booking management
     Route::get('/booking_db', [Booking_dbController::class, 'index'])->name('booking_db'); 
     //Route::delete('/booking_db/{id}', [Booking_dbController::class, 'destroy'])->name('booking_db.destroy');
     //Route::put('/booking_db/{id}', [Booking_dbController::class, 'update'])->name('booking_db.update');
     //Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking.show');
     Route::patch('/booking/{id}/update-status', [Booking_dbController::class, 'updateStatus'])->name('booking.update-status');
+    
 
     // สำหรับดูประวัติการจอง
     Route::get('/booking_history', [BookingHistoryController::class, 'index'])->name('booking.history');

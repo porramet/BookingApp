@@ -27,7 +27,6 @@ return new class extends Migration
             $table->string('status_name')->nullable();
             $table->dateTime('booking_start'); // เวลาเริ่มต้นการจอง
             $table->dateTime('booking_end'); // เวลาสิ้นสุดการจอง
-            $table->unsignedBigInteger('status_id'); // รหัสสถานะการจอง
             $table->text('reason')->nullable(); // เหตุผลในการจอง
             $table->decimal('total_price', 10, 2)->nullable(); // ค่าบริการรวม (ถ้ามี)
             $table->enum('payment_status', ['pending', 'paid', 'cancelled'])->default('pending'); // สถานะการชำระเงิน

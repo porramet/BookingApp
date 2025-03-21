@@ -57,38 +57,52 @@
                 <!-- เมนูแนวตั้ง -->
                 <nav>
                     <ul class="nav flex-column">
+                        <!-- หน้าหลัก -->
                         <li class="nav-item">
-                            <a href="{{ url('/') }}" class="nav-link text-gray-700">
+                            <a href="{{ route('index') }}" class="nav-link text-gray-700">
                                 <i class="fas fa-home me-2"></i> หน้าหลัก
                             </a>
                         </li>
+                
+                        <!-- ปฏิทินการจอง -->
                         <li class="nav-item">
-                            <a href="{{ url('calendar') }}" class="nav-link text-gray-700">
+                            <a href="{{ route('calendar.index') }}" class="nav-link text-gray-700">
                                 <i class="fas fa-calendar-alt me-2"></i> ปฏิทินการจอง
                             </a>
                         </li>
+                
+                        <!-- จองห้อง -->
                         <li class="nav-item">
-                            <a href="{{ url('/booking') }}" class="nav-link text-gray-700">
+                            <a href="{{ route('booking.index') }}" class="nav-link text-gray-700">
                                 <i class="fas fa-door-open me-2"></i> จองห้อง
                             </a>
                         </li>
+                
+                        <!-- วิธีใช้ -->
                         <li class="nav-item">
-                            <a href="{{ url('/usage') }}" class="nav-link text-gray-700">
-                                <i class="fas fa-question-circle me-2"></i> วิธีใช้
+                            <a href="{{ route('usage.index') }}" class="nav-link text-gray-700">
+                                <i class="fas fa-info-circle me-2"></i> วิธีใช้
                             </a>
                         </li>
+                
+                       
                         <li class="nav-item">
-                            <a href="{{ url('/contact') }}" class="nav-link text-gray-700">
+                            <a href="{{ route('contact.index') }}" class="nav-link text-gray-700">
                                 <i class="fas fa-phone-alt me-2"></i> ติดต่อ
                             </a>
                         </li>
+                        
+                
+                        <!-- แดชบอร์ด (สำหรับ admin) -->
                         @if(Auth::check() && Auth::user()->role === 'admin')
                             <li class="nav-item">
-                                <a href="{{ url('/dashboard') }}" class="nav-link text-gray-700">
-                                    <i class="fas fa-table-columns me-2"></i> แดชบอร์ด
+                                <a href="{{ route('dashboard') }}" class="nav-link text-gray-700">
+                                    <i class="fas fa-tachometer-alt me-2"></i> แดชบอร์ด
                                 </a>
                             </li>
                         @endif
+                
+                        <!-- ออกจากระบบ (สำหรับผู้ที่ล็อกอินแล้ว) -->
                         @if(Auth::check())
                             <li class="nav-item">
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -99,13 +113,16 @@
                                 </form>
                             </li>
                         @else
+                            <!-- เข้าสู่ระบบ (สำหรับผู้ที่ยังไม่ได้ล็อกอิน) -->
                             <li class="nav-item">
-                                <a href="{{ url('/login') }}" class="nav-link text-gray-700">
+                                <a href="{{ route('login') }}" class="nav-link text-gray-700">
                                     <i class="fas fa-sign-in-alt me-2"></i> เข้าสู่ระบบ
                                 </a>
                             </li>
+                
+                            <!-- สมัครสมาชิก (สำหรับผู้ที่ยังไม่ได้ล็อกอิน) -->
                             <li class="nav-item">
-                                <a href="{{ url('/register') }}" class="nav-link text-gray-700">
+                                <a href="{{ route('register') }}" class="nav-link text-gray-700">
                                     <i class="fas fa-user-plus me-2"></i> สมัครสมาชิก
                                 </a>
                             </li>

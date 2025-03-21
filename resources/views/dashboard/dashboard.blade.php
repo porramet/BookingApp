@@ -19,17 +19,21 @@
                     <a href="#" class="view-all-link">ดูทั้งหมด</a>
                 </div>
                 <div class="booking-carousel" id="bookingCarousel">
-                    @foreach($recentBookings as $booking)
-                    <div class="booking-card">
-                        <img src="https://placehold.co/100x100" alt="ภาพห้องประชุม {{ $booking->room_name }}">
-                        <p class="room-name">{{ $booking->room_name }}</p>
-                        <p class="building-name">{{ $booking->building_name }}</p>
-                        <p class="booker-name">{{ $booking->booker_name }}</p>
-                        <button class="btn btn-light btn-sm" onclick="showDetails('{{ $booking->room_name }}', '{{ $booking->booker_name }}', '{{ $booking->date }}', '{{ $booking->time }}')">
-                            ดูรายละเอียด
-                        </button>
-                    </div>
-                    @endforeach
+                    @if(isset($recentBookings) && $recentBookings->count() > 0)
+                        @foreach($recentBookings as $booking)
+                            <div class="booking-card">
+                                <img src="https://placehold.co/100x100" alt="ภาพห้องประชุม {{ $booking->room_name }}">
+                                <p class="room-name">{{ $booking->room_name }}</p>
+                                <p class="building-name">{{ $booking->building_name }}</p>
+                                <p class="booker-name">{{ $booking->booker_name }}</p>
+                                <button class="btn btn-light btn-sm" onclick="showDetails('{{ $booking->room_name }}', '{{ $booking->booker_name }}', '{{ $booking->date }}', '{{ $booking->time }}')">
+                                    ดูรายละเอียด
+                                </button>
+                            </div>
+                        @endforeach
+                    @else
+                        <p>ไม่มีการจองล่าสุด</p>
+                    @endif
                 </div>
                 <div class="carousel-controls">
                     <button class="icon-btn" onclick="scrollCarousel(-200)">
@@ -45,9 +49,9 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="stat-card">
-                        <div class="icon"><i class="fas fa-door-open"></i></div>
+                        <div class="icon"><i class="fas fa-users"></i></div>
                         <div class="details">
-                            <h3>{{ $totalRooms }}</h3>
+                            <h3>{{ $totalRooms ?? 0 }}</h3>
                             <p>จำนวนห้อง</p>
                         </div>
                     </div>
@@ -56,7 +60,7 @@
                     <div class="stat-card">
                         <div class="icon"><i class="fas fa-users"></i></div>
                         <div class="details">
-                            <h3>{{ $totalUsers }}</h3>
+                            <h3>{{ $totalUsers ?? 0 }}</h3>
                             <p>จำนวนผู้ใช้</p>
                         </div>
                     </div>
@@ -65,7 +69,7 @@
                     <div class="stat-card">
                         <div class="icon"><i class="fas fa-calendar-check"></i></div>
                         <div class="details">
-                            <h3>{{ $totalBookings }}</h3>
+                            <h3>{{ $totalBookings ?? 0 }}</h3>
                             <p>จำนวนการจองห้อง</p>
                         </div>
                     </div>
@@ -101,7 +105,8 @@
     document.addEventListener("DOMContentLoaded", function () {
         let ctx = document.getElementById("bookingChart").getContext("2d");
 
-        let bookingData = @json($weeklyStats);
+        // ตรวจสอบว่าตัวแปร $weeklyStats มีค่าหรือไม่
+        let bookingData = @json($weeklyStats ?? []); // ใช้ null coalescing operator เพื่อป้องกันข้อผิดพลาด
         let weeks = bookingData.map(item => "Week " + item.week);
         let totals = bookingData.map(item => item.total);
 

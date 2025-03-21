@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-10 content">
+<div class="container">
+    <div class="row mb-4">
+        
             <!-- Hero Banner -->
             <div class="card bg-warning text-white mb-4">
                 <div class="card-body text-center py-5">
@@ -22,7 +22,8 @@
                     <div class="card bg-light shadow-sm h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-building text-primary display-4 mb-3"></i>
-                            <h3 class="fw-bold">{{ count($buildings ?? []) }} อาคาร</h3>
+                            <h3 class="fw-bold">{{ $totalBuildings }} อาคาร</h3>
+
                             <p>อาคารที่ให้บริการจองห้อง</p>
                         </div>
                     </div>
@@ -31,7 +32,8 @@
                     <div class="card bg-light shadow-sm h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-door-open text-success display-4 mb-3"></i>
-                            <h3 class="fw-bold">{{ count($rooms ?? []) }} ห้อง</h3>
+                            <h3 class="fw-bold">{{ $totalRooms }} ห้อง</h3>
+
                             <p>ห้องที่เปิดให้จอง</p>
                         </div>
                     </div>
@@ -40,7 +42,8 @@
                     <div class="card bg-light shadow-sm h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-calendar-check text-warning display-4 mb-3"></i>
-                            <h3 class="fw-bold">{{ $totalBookings ?? 0 }}</h3>
+                            <h3 class="fw-bold">{{ $totalBookings }} การจองทั้งหมด</h3>
+
                             <p>การจองทั้งหมด</p>
                         </div>
                     </div>
@@ -188,7 +191,7 @@
                             <p><i class="fas fa-map-marker-alt me-2"></i> 680 ถนนนิตโย ตำบลธาตุเชิงชุม อำเภอเมือง จังหวัดสกลนคร 47000</p>
                             <p><i class="fas fa-phone-alt me-2"></i> 042-970021</p>
                             <p><i class="fas fa-envelope me-2"></i> booking@snru.ac.th</p>
-                            <a href="{{ route('contact') }}" class="btn btn-outline-primary">ติดต่อเพิ่มเติม</a>
+                            <a href="{{ route('contact.index') }}" class="btn btn-outline-primary">ติดต่อเพิ่มเติม</a>
                         </div>
                     </div>
                 </div>
@@ -264,7 +267,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 @endsection

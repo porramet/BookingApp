@@ -2,21 +2,20 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="container">
 
-    <div class="row">
-        <div class="col-md-10 content">
-            <div class="card bg-warning text-white mb-4">
-                <div class="card-body text-center">
-                    <h3 class="card-title">ส่วนลดพิเศษ</h3>
-                    <h2 class="fw-bold">รับส่วนลด 20% สำหรับการจองครั้งแรก</h2>
-                    <p>ใช้โค้ด <strong>NEWUSER20</strong> เมื่อทำการจอง</p>
-                </div>
+    <div class="row mb-4">
+        
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body text-center py-5">
+                <h1 class="display-4 fw-bold">ระบบจองห้องออนไลน์</h1>
+                <h2>มหาวิทยาลัยราชภัฏสกลนคร</h2>
+                <p class="lead mt-3">บริการจองห้องเรียน ห้องประชุม และสถานที่จัดกิจกรรมต่างๆ แบบออนไลน์</p>
             </div>
+        </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h3 class="fw-bold">ประเภทห้อง</h3>
-                <a href="{{ route('rooms.index') }}" class="text-warning fw-bold">ดูทั้งหมด</a>
             </div>
             <div class="row g-3">
                 @php
@@ -49,8 +48,7 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
-                <h3 class="fw-bold">อาคาร</h3>
-                <a href="{{ route('buildings.index') }}" class="text-warning fw-bold">ดูทั้งหมด</a>
+                <h3 class="fw-bold">อาคารทั้งหมด</h3>
             </div>
             <div class="row g-3">
                 @foreach($buildings as $building)
@@ -80,7 +78,7 @@
                             <h5 class="fw-bold">{{ $room->room_name }}</h5>
                             <p class="text-muted mb-1">อาคาร {{ $room->building->building_name }} ชั้น {{ $room->class }}</p>
                             <p class="text-muted mb-1">รองรับได้ {{ $room->capacity }} คน</p>
-                            <p class="fw-bold text-warning">฿{{ number_format($room->service_rates, 2) }} /ชั่วโมง</p>
+                            <p class="fw-bold text-warning">฿{{ number_format($room->service_rates, 2) }} /วัน</p>
                             <a href="{{ route('partials.booking.form', ['id' => $room->room_id]) }}" class="btn btn-warning w-100">จองเลย</a>
                         </div>
                     </div>
@@ -106,7 +104,7 @@
                             <h5 class="fw-bold">{{ $room->room_name }}</h5>
                             <p class="text-muted mb-1">อาคาร {{ $room->building->building_name }} ชั้น {{ $room->class }}</p>
                             <p class="text-muted mb-1">รองรับได้ {{ $room->capacity }} คน</p>
-                            <p class="fw-bold text-warning">฿{{ number_format($room->service_rates, 2) }} /ชั่วโมง</p>
+                            <p class="fw-bold text-warning">฿{{ number_format($room->service_rates, 2) }} /วัน</p>
                             <a href="{{ url('booking/'.$room->room_id) }}" class="btn btn-warning w-100">จองเลย</a>
 
                         </div>
@@ -114,7 +112,6 @@
                 </div>
                 @endforeach
             </div>
-        </div>
     </div>
 </div>
 @endsection

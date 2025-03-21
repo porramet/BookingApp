@@ -1,0 +1,8 @@
+/* Existing CSS content */
+
+/* Status color classes */
+.status-color-1 { background-color: #28A745; } /* Success */
+.status-color-2 { background-color: #FFC107; } /* Warning */
+.status-color-3 { background-color: #DC3545; } /* Danger */
+.status-color-4 { background-color: #007BFF; } /* Primary */
+.status-color-5 { background-color: #6C757D; } /* Secondary */

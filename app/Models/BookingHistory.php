@@ -12,9 +12,27 @@ class BookingHistory extends Model
     protected $table = 'booking_history';
     
     protected $fillable = [
-        'booking_id', 'user_id', 'room_id', 'external_name', 'external_email', 
-        'external_phone', 'booking_date', 'start_time', 'end_time', 
-        'purpose', 'status_id', 'payment_status', 'amount', 'moved_to_history_at'
+        'user_id',
+        'external_name',
+        'external_email',
+        'external_phone',
+        'building_id',
+        'room_id',
+        'room_name',
+        'building_name',
+        'booking_start',
+        'booking_end',
+        'status_id',
+        'reason',
+        'total_price',
+        'payment_status',
+        'is_external',
+        'fullname',
+        'phone',
+        'email',
+        'department',
+        'attendees',
+        'purpose',
     ];
 
     public function user()

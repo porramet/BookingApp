@@ -6,7 +6,7 @@
         <div class="col-md-9 content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold">ห้องทั้งหมด</h2>
-                <a href="{{ url('/') }}" class="btn btn-outline-warning">
+                <a href="{{ url('booking') }}" class="btn btn-outline-warning">
                     <i class="fas fa-arrow-left"></i> กลับหน้าหลัก
                 </a>
             </div>

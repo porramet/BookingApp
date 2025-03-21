@@ -12,7 +12,6 @@ class Room extends Model
     protected $primaryKey = 'room_id';
     protected $table = 'rooms'; // กำหนดชื่อตารางให้แน่นอน
     //protected $primaryKey = 'room_id'; // แก้จาก 'id' เป็น 'room_id'
-    
     protected $keyType = 'int'; // กำหนด type เป็น integer
     public $incrementing = false;
 

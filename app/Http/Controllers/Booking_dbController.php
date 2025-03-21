@@ -15,7 +15,7 @@ class Booking_dbController extends Controller
         $booking = Booking::findOrFail($id);
         
         // Create a new entry in the booking history
-        DB::table('booking_histories')->insert([
+        DB::table('booking_history')->insert([
             'user_id' => $booking->user_id,
             'external_name' => $booking->external_name,
             'external_email' => $booking->external_email,
@@ -40,7 +40,7 @@ class Booking_dbController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
+    
         // Delete the original booking
         $booking->delete();
     }
