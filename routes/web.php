@@ -147,8 +147,8 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
     Route::get('/rooms/{id}', [ManageRoomsController::class, 'showRoomDetails'])->name('manage_rooms.details');
     Route::get('/rooms/{room}/edit', [ManageRoomsController::class, 'edit'])->name('manage_rooms.edit');
     Route::put('/rooms/{room}', [ManageRoomsController::class, 'update'])->name('manage_rooms.update');
-    Route::delete('/manage_rooms/{room}', [ManageRoomsController::class, 'deleteRoom'])->name('manage_rooms.destroy');
-
+    //Route::delete('/manage_rooms/{room}', [ManageRoomsController::class, 'deleteRoom'])->name('manage_rooms.destroy');
+    Route::delete('/manage_rooms/{room}', [ManageRoomsController::class, 'destroy'])->name('manage_rooms.destroy');
     // User management routes
     Route::get('/manage-users', [ManageUsersController::class, 'index'])->name('manage_users.index');
     Route::put('/manage-users/{id}', [ManageUsersController::class, 'update'])->name('manage_users.update');

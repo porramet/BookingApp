@@ -2,7 +2,7 @@
 
 @section('content')
 <div>
-    <div class="col-md-10 content">
+    <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
          <h2>
           จัดการการจองห้อง
@@ -54,7 +54,7 @@
              {{ $confirmedBookings }}
             </h3>
             <p>
-             จำนวนการจองที่ยืนยันแล้ว
+             จำนวนการจองที่อุนมัติแล้ว
             </p>
            </div>
           </div>
@@ -328,6 +328,3 @@
     });
 </script>
 
-<style>
-    
-</style>

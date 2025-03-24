@@ -12,38 +12,37 @@ class Booking_dbController extends Controller
 {
     public function moveToHistory($id)
     {
-        $booking = Booking::findOrFail($id);
-        
-        // Create a new entry in the booking history
-        DB::table('booking_history')->insert([
-            'user_id' => $booking->user_id,
-            'external_name' => $booking->external_name,
-            'external_email' => $booking->external_email,
-            'external_phone' => $booking->external_phone,
-            'building_id' => $booking->building_id,
-            'room_id' => $booking->room_id,
-            'room_name' => $booking->room_name,
-            'building_name' => $booking->building_name,
-            'booking_start' => $booking->booking_start,
-            'booking_end' => $booking->booking_end,
-            'status_id' => $booking->status_id,
-            'reason' => $booking->reason,
-            'total_price' => $booking->total_price,
-            'payment_status' => $booking->payment_status,
-            'is_external' => $booking->is_external,
-            'fullname' => $booking->fullname,
-            'phone' => $booking->phone,
-            'email' => $booking->email,
-            'department' => $booking->department,
-            'attendees' => $booking->attendees,
-            'purpose' => $booking->purpose,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-    
-        // Delete the original booking
-        $booking->delete();
+        try {
+            $booking = Booking::findOrFail($id);
+
+            DB::table('booking_history')->insert([
+                'booking_id' => $booking->id,
+                'user_id' => $booking->user_id,
+                'external_name' => $booking->external_name,
+                'external_email' => $booking->external_email,
+                'external_phone' => $booking->external_phone,
+                'building_id' => $booking->building_id,
+                'building_name' => $booking->building_name,
+                'room_id' => $booking->room_id,
+                'room_name' => $booking->room_name,
+                'booking_start' => $booking->booking_start,
+                'booking_end' => $booking->booking_end,
+                'status_id' => $booking->status_id,
+                'status_name' => $booking->status_name,
+                'reason' => $booking->reason,
+                'total_price' => $booking->total_price,
+                'payment_status' => $booking->payment_status,
+                'is_external' => $booking->is_external,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $booking->delete();
+        } catch (\Exception $e) {
+            \Log::error("Failed to move booking to history: " . $e->getMessage());
+        }
     }
+    
     
     public function index(Request $request)
     {
@@ -96,22 +95,21 @@ class Booking_dbController extends Controller
     }
 
     public function updateStatus(Request $request, $id)
-    {
-        $booking = Booking::findOrFail($id);
-        $booking->status_id = $request->status_id;
-        $booking->save();
+{
+    $booking = Booking::findOrFail($id);
+    $status = Status::findOrFail($request->status_id);
 
-        // ถ้าสถานะเป็น "ดำเนินการเสร็จสิ้น" (status_id = 6) ให้ย้ายไปยังประวัติ
-        if ($request->status_id == 6) {
-            $this->moveToHistory($id);
-        }
+    $booking->status_id = $status->status_id;
+    $booking->save();
 
-        $statusName = DB::table('status')
-            ->where('status_id', $request->status_id)
-            ->value('status_name');
-            
-        return redirect()->route('booking_db')->with('success', "การจองถูกเปลี่ยนสถานะเป็น{$statusName}เรียบร้อยแล้ว");
+    // ตรวจสอบว่าสถานะเป็น 6 และเรียกใช้ moveToHistory
+    if ($status->status_id == 6) {
+        $this->moveToHistory($id);
+        \Log::info("Booking {$id} moved to history."); // ล็อกข้อความเพื่อตรวจสอบ
     }
+
+    return redirect()->route('booking_db')->with('success', "การจองถูกเปลี่ยนสถานะเป็น {$status->status_name} เรียบร้อยแล้ว");
+}
     
     /**
      * ตรวจสอบและอัปเดตสถานะการจองที่สิ้นสุดไปแล้วโดยอัตโนมัติ

@@ -297,4 +297,21 @@ class ManageRoomsController extends Controller
             return redirect()->back()->with('error', 'Failed to update room. Please try again.');
         }
     }
+
+    public function destroy($room_id)
+{
+    // ค้นหาห้องที่ต้องการลบ
+    $room = Room::findOrFail($room_id);
+
+    // ลบรูปภาพ (ถ้ามี)
+    if ($room->image) {
+        Storage::delete('public/' . $room->image);
+    }
+
+    // ลบห้อง
+    $room->delete();
+
+    // ส่งกลับไปยังหน้าก่อนหน้าพร้อมข้อความสำเร็จ
+    return redirect()->back()->with('success', 'ลบห้องเรียบร้อยแล้ว');
+}
 }

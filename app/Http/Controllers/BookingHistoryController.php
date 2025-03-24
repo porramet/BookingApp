@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class BookingHistoryController extends Controller
 {
+    /**
+     * เพิ่มการจองลงในประวัติ
+     *
+     * @param mixed $booking
+     * @return void
+     */
     public function addBookingToHistory($booking)
     {
         $bookingHistory = new BookingHistory();
@@ -22,16 +28,23 @@ class BookingHistoryController extends Controller
             'start_time' => $booking->booking_start,
             'end_time' => $booking->booking_end,
             'purpose' => $booking->reason,
-            'status_id' => 6,
-            'payment_status' => 'completed', // Assuming payment is completed
+            'status_id' => 6, // ดำเนินการเสร็จสิ้น
+            'payment_status' => 'completed', // สมมติว่าชำระเงินแล้ว
             'amount' => $booking->total_price,
             'moved_to_history_at' => now(),
         ]);
         $bookingHistory->save();
     }
 
+    /**
+     * แสดงรายการประวัติการจอง
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
     public function index(Request $request)
     {
+        // สร้าง query สำหรับประวัติการจอง
         $query = DB::table('booking_history')
             ->leftJoin('status', 'booking_history.status_id', '=', 'status.status_id')
             ->leftJoin('users', 'booking_history.user_id', '=', 'users.id')
@@ -41,7 +54,7 @@ class BookingHistoryController extends Controller
                 'users.name as user_name'
             );
 
-        // Search functionality
+        // ค้นหาข้อมูล
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -51,57 +64,67 @@ class BookingHistoryController extends Controller
             });
         }
 
-        // Filter by date
+        // กรองตามวันที่เริ่มต้น
         if ($request->has('date_from') && $request->date_from) {
             $query->where('booking_history.booking_date', '>=', $request->date_from);
         }
-        
+
+        // กรองตามวันที่สิ้นสุด
         if ($request->has('date_to') && $request->date_to) {
             $query->where('booking_history.booking_date', '<=', $request->date_to);
         }
 
-        $bookingHistory = $query->orderBy('booking_history.booking_date', 'desc')
-            ->paginate(10);
-        
-        return view('dashboard.booking_history', compact('bookingHistory'));
+        // เรียงลำดับและแบ่งหน้า
+        $bookingHistory = $query->orderBy('booking_history.booking_date', 'desc')->paginate(10);
+
+        // นับจำนวนการจอง
+        $totalBookings = DB::table('booking_history')->count();
+        $completedBookings = DB::table('booking_history')->where('status_id', 6)->count(); // เสร็จสิ้น
+        $cancelledBookings = DB::table('booking_history')->where('status_id', 5)->count(); // ยกเลิก
+
+        return view('dashboard.booking_history', compact('bookingHistory', 'totalBookings', 'completedBookings', 'cancelledBookings'));
     }
 
     /**
- * แสดงประวัติการจองห้อง
- */
-public function history(Request $request)
-{
-    // สร้าง query สำหรับประวัติการจอง
-    $query = DB::table('booking_histories')
-        ->leftJoin('status', 'booking_histories.status_id', '=', 'status.status_id')
-        ->leftJoin('users', 'booking_histories.user_id', '=', 'users.id')
-        ->select(
-            'booking_histories.*', 
-            'status.status_name', 
-            'users.name as user_name'
-        );
+     * แสดงประวัติการจองห้อง (Alternate Method)
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
+    public function history(Request $request)
+    {
+        // สร้าง query สำหรับประวัติการจอง
+        $query = DB::table('booking_history')
+            ->leftJoin('status', 'booking_history.status_id', '=', 'status.status_id')
+            ->leftJoin('users', 'booking_history.user_id', '=', 'users.id')
+            ->select(
+                'booking_history.*', 
+                'status.status_name', 
+                'users.name as user_name'
+            );
 
-    // Search functionality
-    if ($request->has('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('booking_histories.id', 'like', "%{$search}%")
-              ->orWhere('booking_histories.external_name', 'like', "%{$search}%")
-              ->orWhere('users.name', 'like', "%{$search}%");
-        });
-    }
-    
-    // Calendar search - if date is selected in calendar
-    if ($request->has('booking_date')) {
-        $bookingDate = $request->booking_date;
-        $query->where(function($q) use ($bookingDate) {
-            $q->whereDate('booking_histories.booking_start', '<=', $bookingDate)
-              ->whereDate('booking_histories.booking_end', '>=', $bookingDate);
-        });
-    }
+        // ค้นหาข้อมูล
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('booking_history.booking_id', 'like', "%{$search}%")
+                  ->orWhere('booking_history.external_name', 'like', "%{$search}%")
+                  ->orWhere('users.name', 'like', "%{$search}%");
+            });
+        }
 
-    $bookingHistories = $query->paginate(10);
-    
-    return view('dashboard.booking_history', compact('bookingHistories'));
-}
+        // กรองตามวันที่
+        if ($request->has('booking_date')) {
+            $bookingDate = $request->booking_date;
+            $query->where(function($q) use ($bookingDate) {
+                $q->whereDate('booking_history.booking_start', '<=', $bookingDate)
+                  ->whereDate('booking_history.booking_end', '>=', $bookingDate);
+            });
+        }
+
+        // เรียงลำดับและแบ่งหน้า
+        $bookingHistories = $query->paginate(10);
+
+        return view('dashboard.booking_history', compact('bookingHistories'));
+    }
 }

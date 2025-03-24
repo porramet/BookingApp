@@ -2,7 +2,7 @@
 
 @section('content')
 <div>
-    <div class="col-md-10 content">
+    <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>จัดการห้องและอาคาร</h2>
             <div class="d-flex align-items-center">
@@ -12,13 +12,6 @@
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
-                <button class="icon-btn">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <button class="icon-btn">
-                    <i class="fas fa-bell"></i>
-                </button>
-                <img alt="Profile image" class="profile-img" src="https://placehold.co/40x40"/>
             </div>
         </div>
 
@@ -65,41 +58,54 @@
 
         <div class="row" id="buildings-container">
             <div class="col-md-12">
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>รายการอาคาร</h5>
-                        <button class="btn btn-primary" onclick="openAddBuildingModal()">เพิ่มอาคาร</button>
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                        <h5 class="mb-0">รายการอาคาร</h5>
+                        <button class="btn btn-primary btn-sm" onclick="openAddBuildingModal()">
+                            <i class="fas fa-plus me-1"></i>เพิ่มอาคาร
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
+                    <div class="card-body p-0">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 p-4">
                             @foreach($buildings as $building)
-                                <div class="col-md-3">
-                                    <div class="card building-card mb-4" data-name="{{ $building->building_name }}">
-                                        <img alt="ภาพ{{ $building->building_name }}" class="card-img-top" src="{{ $building->image ? asset('storage/' . $building->image) : asset('images/no-picture.jpg') }}" style="height: 200px; object-fit: cover"/>
-
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="position-relative">
+                                            <img alt="ภาพ{{ $building->building_name }}" class="card-img-top" src="{{ $building->image ? asset('storage/' . $building->image) : asset('images/no-picture.jpg') }}" style="height: 180px; object-fit: cover;"/>
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-door-open me-1"></i>{{ $building->rooms->count() }} ห้อง
+                                                </span>
+                                            </div>
+                                        </div>
                                         <div class="card-body">
-                                            <h5>{{ $building->building_name }}</h5>
-                                            <p>บันทึกโดย: {{ $building->citizen_save }}</p>
-                                            <p>จำนวนห้อง: {{ $building->rooms->count() }}</p>
-                                            <button class="btn btn-sm btn-warning" onclick="openEditBuildingModal('{{ $building->id }}', '{{ $building->building_name }}', '{{ $building->citizen_save }}')">แก้ไข</button>
-                                            <button class="btn btn-sm btn-danger" onclick="confirmDeleteBuilding('{{ $building->id }}')">ลบ</button>
-                                            <button class="btn btn-sm btn-info" onclick="window.location.href='{{ route('manage_rooms.show', $building->id) }}'">ดูห้อง</button>
+                                            <h5 class="card-title">{{ $building->building_name }}</h5>
+                                            <p class="card-text text-muted small mb-2">
+                                                <i class="fas fa-user-edit me-1"></i>บันทึกโดย: {{ $building->citizen_save }}
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-outline-warning flex-grow-1" onclick="openEditBuildingModal('{{ $building->id }}', '{{ $building->building_name }}', '{{ $building->citizen_save }}')">
+                                                    <i class="fas fa-edit me-1"></i>แก้ไข
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger flex-grow-1" onclick="confirmDeleteBuilding('{{ $building->id }}')">
+                                                    <i class="fas fa-trash me-1"></i>ลบ
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-info flex-grow-1" onclick="window.location.href='{{ route('manage_rooms.show', $building->id) }}'">
+                                                    <i class="fas fa-door-open me-1"></i>ดูห้อง
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-center mt-4">
-                                    {{ $buildings->appends(['search' => request('search')])->links('pagination::bootstrap-5') }}
-                                </div>
-                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center p-4">
+                            {{ $buildings->appends(['search' => request('search')])->links('pagination::bootstrap-5') }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
 <!-- Add Building Modal -->
 <div class="modal fade" id="addBuildingModal" tabindex="-1" role="dialog" aria-labelledby="addBuildingModalLabel" aria-hidden="true">

@@ -2,12 +2,9 @@
 
 @section('content')
 <div>
-    <div class="col-md-10 content">
+    <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>ภาพรวม</h2>
-        <div class="d-flex align-items-center">
-            <input class="search-bar" placeholder="ค้นหาบางอย่าง" type="text"/>
-        </div>
     </div>
 
     <div class="row">
