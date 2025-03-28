@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-9 content">
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12 content">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold">ห้องทั้งหมด</h2>
                 <a href="{{ url('booking') }}" class="btn btn-outline-warning">
@@ -13,7 +13,7 @@
 
             <div class="row g-4">
                 @foreach($rooms as $room)
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <div class="card shadow-sm">
                         <img src="{{ $room->image ? asset('storage/'.$room->image) : '/api/placeholder/400/200' }}" class="card-img-top" alt="Room Image">
                         <div class="card-body">

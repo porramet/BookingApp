@@ -83,16 +83,7 @@
                             <a href="{{ route('usage.index') }}" class="nav-link text-gray-700">
                                 <i class="fas fa-info-circle me-2"></i> วิธีใช้
                             </a>
-                        </li>
-                
-                       
-                        <li class="nav-item">
-                            <a href="{{ route('contact.index') }}" class="nav-link text-gray-700">
-                                <i class="fas fa-phone-alt me-2"></i> ติดต่อ
-                            </a>
-                        </li>
-                        
-                
+                        </li>                  
                         <!-- แดชบอร์ด (สำหรับ admin) -->
                         @if(Auth::check() && Auth::user()->role === 'admin')
                             <li class="nav-item">

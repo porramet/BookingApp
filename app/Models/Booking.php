@@ -11,9 +11,9 @@ class Booking extends Model
         'created_at' => 'datetime',
         'booking_end' => 'datetime',
         'booking_start' => 'datetime',
+        'verified_at' => 'datetime',
     ];
     use HasFactory;
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -47,6 +47,7 @@ class Booking extends Model
         'booking_end',
         'status_id',
         'reason',
+        'approver_name',
         'total_price',
         'payment_status',
         'is_external',
@@ -58,7 +59,11 @@ class Booking extends Model
         'payment_slip',
         'attendees',
         'purpose'
+        
 
     ];
 
 }
+
+
+

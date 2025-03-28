@@ -75,14 +75,20 @@ class BookingHistoryController extends Controller
         }
 
         // เรียงลำดับและแบ่งหน้า
-        $bookingHistory = $query->orderBy('booking_history.booking_date', 'desc')->paginate(10);
+        $bookingHistory = $query->orderBy('booking_history.booking_date', 'desc')->paginate(20);
+
 
         // นับจำนวนการจอง
         $totalBookings = DB::table('booking_history')->count();
         $completedBookings = DB::table('booking_history')->where('status_id', 6)->count(); // เสร็จสิ้น
         $cancelledBookings = DB::table('booking_history')->where('status_id', 5)->count(); // ยกเลิก
 
-        return view('dashboard.booking_history', compact('bookingHistory', 'totalBookings', 'completedBookings', 'cancelledBookings'));
+        return view('dashboard.booking_history', [
+            'bookings' => $bookingHistory,
+            'totalBookings' => $totalBookings,
+            'completedBookings' => $completedBookings,
+            'cancelledBookings' => $cancelledBookings
+        ]);
     }
 
     /**

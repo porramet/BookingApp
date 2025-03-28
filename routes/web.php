@@ -135,7 +135,19 @@ Route::middleware(['auth', 'can:admin-only'])->group(function () {
     //Route::put('/booking_db/{id}', [Booking_dbController::class, 'update'])->name('booking_db.update');
     //Route::get('/booking/{id}', [BookingController::class, 'show'])->name('booking.show');
     Route::patch('/booking/{id}/update-status', [Booking_dbController::class, 'updateStatus'])->name('booking.update-status');
+    //Route::post('/bookings/{id}/verify-payment', [BookingController::class, 'verifyPayment'])->name('booking.verify-payment');
+    // Existing routes
+    //Route::post('/booking/{id}/confirm-payment', [Booking_dbController::class, 'confirmPayment'])->name('booking.confirm-payment');
+    // เส้นทางสำหรับการจัดการห้อง
+    Route::get('/booking-management', [Booking_dbController::class, 'index'])->name('booking_db');
     
+    // เส้นทางสำหรับเปลี่ยนสถานะการจอง
+    Route::patch('/booking/{id}/update-status', [Booking_dbController::class, 'updateStatus'])
+        ->name('booking.update-status');
+    
+    // เส้นทางสำหรับยืนยันการชำระเงิน
+    Route::post('/booking/{id}/confirm-payment', [Booking_dbController::class, 'confirmPayment'])
+        ->name('booking.confirm-payment');
 
     // สำหรับดูประวัติการจอง
     Route::get('/booking_history', [BookingHistoryController::class, 'index'])->name('booking.history');

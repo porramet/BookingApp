@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Status;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\UpdateBookingPaymentRequest;
+
 use Carbon\Carbon;
 
 class Booking_dbController extends Controller
@@ -94,12 +97,16 @@ class Booking_dbController extends Controller
         return view('dashboard.booking_db', compact('bookings', 'totalBookings', 'pendingBookings', 'confirmedBookings', 'statuses'));
     }
 
+
     public function updateStatus(Request $request, $id)
+
 {
     $booking = Booking::findOrFail($id);
     $status = Status::findOrFail($request->status_id);
 
     $booking->status_id = $status->status_id;
+    // เพิ่มชื่อผู้อนุมัติ
+    $booking->approver_name = Auth::user()->name;
     $booking->save();
 
     // ตรวจสอบว่าสถานะเป็น 6 และเรียกใช้ moveToHistory
@@ -132,4 +139,23 @@ class Booking_dbController extends Controller
             $this->moveToHistory($booking->id);
         }
     }
+
+    public function confirmPayment(UpdateBookingPaymentRequest $request, $id)
+{
+    $booking = Booking::findOrFail($id);
+    
+    if ($request->hasFile('payment_slip')) {
+        $booking->payment_slip = $request->file('payment_slip')->store('payment_slips', 'public');
+    }
+
+    $booking->payment_status = $request->payment_status;
+    $booking->verified_at = now();
+    $booking->save();
+
+    return redirect()->route('booking_db')
+        ->with('success', 'สถานะการชำระเงินถูกอัปเดตเรียบร้อยแล้ว');
 }
+
+
+}
+

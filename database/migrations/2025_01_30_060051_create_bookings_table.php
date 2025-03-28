@@ -33,6 +33,8 @@ return new class extends Migration
             $table->boolean('is_external')->default(false); // ระบุว่าผู้จองเป็นบุคคลภายนอกหรือไม่
             $table->timestamps(); // วันที่สร้างและอัปเดต
             $table->string('payment_slip')->nullable(); // เส้นทางไฟล์สลิปการโอนเงิน
+            $table->timestamp('verified_at')->nullable()->after('payment_status');
+            $table->string('approver_name')->nullable()->after('status_id');
 
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');

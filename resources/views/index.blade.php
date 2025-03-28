@@ -191,7 +191,6 @@
                             <p><i class="fas fa-map-marker-alt me-2"></i> 680 ถนนนิตโย ตำบลธาตุเชิงชุม อำเภอเมือง จังหวัดสกลนคร 47000</p>
                             <p><i class="fas fa-phone-alt me-2"></i> 042-970021</p>
                             <p><i class="fas fa-envelope me-2"></i> booking@snru.ac.th</p>
-                            <a href="{{ route('contact.index') }}" class="btn btn-outline-primary">ติดต่อเพิ่มเติม</a>
                         </div>
                     </div>
                 </div>
